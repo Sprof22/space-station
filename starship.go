@@ -15,13 +15,16 @@ type Starship struct {
 }
 
 func (s *Starship) GatherAndSendDataPacket(relayURL string) {
-	packet := DataPacket{Data: rand.Intn(100) + 1}
+	for {
+		packet := DataPacket{Data: rand.Intn(100) + 1}
 
-	payload, _ := json.Marshal(packet)
-	_, err := http.Post(relayURL+"/accept", "application/json", bytes.NewReader(payload))
-	if err != nil {
-		fmt.Println("Error sending data packet:", err)
+		payload, _ := json.Marshal(packet)
+		_, err := http.Post(relayURL+"/accept", "application/json", bytes.NewReader(payload))
+		if err != nil {
+			fmt.Println("Error sending data packet:", err)
+		}
+
+		time.Sleep(time.Duration(rand.Intn(1)) * time.Second)
 	}
 
-	time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
 }

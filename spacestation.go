@@ -13,22 +13,28 @@ type SpaceStation struct {
 }
 
 func (ss *SpaceStation) RequestAndProcessDataPacket(relayURL string) {
-	resp, err := http.Get(relayURL + "/provide")
-	if err != nil {
-		fmt.Println("Error requesting data packet:", err)
-		return
+	for {
+		// Request data packet from the relay endpoint
+		resp, err := http.Get(relayURL + "/provide")
+		if err != nil {
+			fmt.Println("Error requesting data packet:", err)
+			continue
+		}
+
+		var packet DataPacket
+		err = json.NewDecoder(resp.Body).Decode(&packet)
+		if err != nil {
+			fmt.Println("Error decoding data packet:", err)
+			resp.Body.Close()
+			continue
+		}
+
+		resp.Body.Close()
+
+		// Process the received data packet
+		fmt.Printf("Space Station %d received and processed data: %+v\n", ss.ID, packet) // Print the data packet
+
+		// Signal readiness to receive more data
+		// ss.RequestChan <- true
 	}
-	defer resp.Body.Close()
-
-	var packet DataPacket
-	err = json.NewDecoder(resp.Body).Decode(&packet)
-	if err != nil {
-		fmt.Println("Error decoding data packet:", err)
-		return
-	}
-
-	// Process the received data packet
-	fmt.Printf("SpaceStation %d received and processed data: %d\n", ss.ID, packet.Data)
-
-	ss.RequestChan <- true
 }

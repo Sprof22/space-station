@@ -28,7 +28,7 @@ func (re *RelayEndpoint) AcceptDataPacket(w http.ResponseWriter, r *http.Request
 func (re *RelayEndpoint) ProvideDataPacket(w http.ResponseWriter, r *http.Request) {
 	packet := <-re.DataChan
 
-	// Print the data packet before sending it
+	// Print the data packet before sending it instead of console log
 	fmt.Printf("Providing data packet: %+v\n", packet)
 
 	w.Header().Set("Content-Type", "application/json")
